@@ -24,7 +24,9 @@ function Detail(props) {
     },)
     useEffect(() => { // 페이지 로딩후 한번만 실행되는 함수
         let localTmp = JSON.parse(localStorage.getItem('watched'))
-        localTmp.push(id)
+        localTmp.push(data.id)
+        localTmp = new Set(localTmp)
+        localTmp = Array.from(localTmp)
         localStorage.setItem('watched', JSON.stringify(localTmp))
         let a = setTimeout(() => {setFade2('end')}, 500);  // 0.5초 후에 코드 실행
         return()=>{ // 초기화

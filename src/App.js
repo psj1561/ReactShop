@@ -6,21 +6,24 @@ import './App.css'; // CSS
 import data from './data.js'; // 상품정보 불러오기
 import Detail from './routes/Detail.js' // Detail 컴포넌트
 import Cart from './routes/cart.js' // Cart 컴포넌트
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query' 
 
 function App() {
 
-  useEffect(()=>{
-    localStorage.setItem('watched', JSON.stringify([]))
+  useEffect(()=>{ // 페이지 처음 로딩시 localStorage에 저장된 데이터 확인후 초기화
+    if (localStorage.getItem('watched') == null){
+      localStorage.setItem('watched', JSON.stringify([]))
+    }
   },[])
 
-  //let obj = {name : 'kim'}
-  
-  //localStorage.setItem('data', JSON.stringify(obj))
-  //let 응애 = localStorage.getItem('data')
-  
-  //console.log(JSON.parse(응애).name)
-
-
+  let result = useQuery({ // react-query 호출
+    queryKey : ['작명'],
+    queryFn : ()=>
+    axios.get('https://codingapple1.github.io/userdata.json').then((a)=>{
+      console.log("굳")
+      return a.data
+    })
+  })
 
   let [shoes,setShoes] = useState(data) // 불러온 data를 state로 지정
   let navigate = useNavigate(); // react-router-dom용 href대신 사용하는 함수
@@ -36,6 +39,11 @@ function App() {
           <Nav.Link onClick={()=>{navigate('/')}}>Home</Nav.Link>
           <Nav.Link onClick={()=>{navigate('./detail/0')}}>Detail</Nav.Link>
           <Nav.Link onClick={()=>{navigate('./cart')}}>Cart</Nav.Link>
+          </Nav>
+          <Nav className="ms-auto">
+            {result.isLoading && '로딩중'}
+            {result.error && '에러남ㅋ'}
+            {result.data && result.data.name}
           </Nav>
         </Container>
       </Navbar>

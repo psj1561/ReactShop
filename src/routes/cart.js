@@ -9,6 +9,7 @@ function Cart(){
 
     return(
         <div>
+
             <h6>{state.user.name}의 장바구니</h6>
 
             <Table striped bordered hover>

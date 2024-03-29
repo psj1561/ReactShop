@@ -1,12 +1,18 @@
-import {createContext, useEffect, useState } from "react";
+import {Suspense, createContext, lazy, useEffect, useState } from "react";
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query' 
 import {Container, Nav, Navbar, Row, Col} from 'react-bootstrap'; // 리액트 부트스트랩
 import {Routes, Route, useNavigate, Outlet} from 'react-router-dom'
 import axios from "axios" // ajax 선언
+
 import './App.css'; // CSS
 import data from './data.js'; // 상품정보 불러오기
-import Detail from './routes/Detail.js' // Detail 컴포넌트
-import Cart from './routes/cart.js' // Cart 컴포넌트
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query' 
+
+// import Detail from './routes/Detail.js' // Detail 컴포넌트 
+// import Cart from './routes/cart.js' // Cart 컴포넌트
+
+const Detail = lazy(()=> import('./routes/Detail.js')); // 필요할때만 import하는 lazy함수
+const Cart = lazy(()=> import('./routes/cart.js'));
+
 
 function App() {
 
@@ -20,7 +26,6 @@ function App() {
     queryKey : ['작명'],
     queryFn : ()=>
     axios.get('https://codingapple1.github.io/userdata.json').then((a)=>{
-      console.log("굳")
       return a.data
     })
   })
@@ -48,6 +53,7 @@ function App() {
         </Container>
       </Navbar>
 
+      <Suspense fallback={<div>로딩중입니다~</div>}> 
       <Routes>
         <Route path="/" element={ // 메인페이지
           <>
@@ -86,12 +92,15 @@ function App() {
           </>
         }/>
         <Route path="/detail/:id" element={
+          
             <Detail shoes={shoes}/>
+          
         }/>
         <Route path="/cart" element={<Cart/>}/>
 
         <Route path="*" element={<div>404 not founded</div>}/>
       </Routes>
+      </Suspense>
 
     </div>
   );
